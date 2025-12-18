@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>今天吃什麼</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+  font-family: 'Baloo 2', Arial, sans-serif;
+  background: #f2f2f2;
+  text-align: center;
+  padding: 50px;
+  color: #333;
+}
+
+.container {
+  max-width: 520px;
+  margin: auto;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 18px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+h1 {
+  color: #444;
+  margin-bottom: 30px;
+}
+
+/* 放大「吃」字 */
+.big-eat {
+  font-size: 1.8em;
+  font-weight: 700;
+}
+
+.meal-select {
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+
+.meal-select button {
+  padding: 12px 22px;
+  font-size: 16px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  background: #f7f7f7;
+}
+
+.meal-select button.active {
+  background: #dcdcdc;
+  border-color: #999;
+}
+
+.decide-btn {
+  margin: 20px 0;
+  padding: 14px 36px;
+  font-size: 18px;
+  border: none;
+  border-radius: 14px;
+  background: #666;
+  color: white;
+  cursor: pointer;
+}
+
+.decide-btn:hover {
+  background: #4d4d4d;
+}
+
+#result {
+  margin-top: 25px;
+  font-size: 24px;
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+  <h1>今天<span class="big-eat">吃</span>什麼</h1>
+
+  <div class="meal-select">
+    <button class="meal-btn" data-meal="breakfast">早餐</button>
+    <button class="meal-btn" data-meal="lunch">午餐</button>
+    <button class="meal-btn" data-meal="tea">下午茶</button>
+    <button class="meal-btn" data-meal="dinner">晚餐</button>
+  </div>
+
+  <button class="decide-btn">隨機選取</button>
+
+  <div id="result">請先選擇餐別</div>
+</div>
+
+<script>
+/* 🍽 餐點已擴充 */
+const meals = {
+  breakfast: [
+    "吐司","蛋餅","飯糰","可頌","燒餅油條","蔥抓餅","地瓜","燕麥粥","貝果",
+    "起司吐司","火腿蛋三明治","培根蛋","法式吐司","玉米蛋餅","蘿蔔糕",
+    "煎餃","饅頭夾蛋","水果優格","美式炒蛋","早餐沙拉"
+  ],
+  lunch: [
+    "便當","牛肉麵","拉麵","咖哩飯","丼飯","水餃","炒飯","義大利麵","滷肉飯",
+    "雞腿飯","排骨飯","鐵板燒","鍋燒意麵","燉飯","韓式拌飯",
+    "越南河粉","泰式打拋豬","壽司","烏龍麵","炒烏龍"
+  ],
+  tea: [
+    "珍奶","雞排","鬆餅","甜甜圈","冰淇淋","蛋塔","司康","薯條","炸雞翅",
+    "可麗餅","布丁","奶酪","起司蛋糕","巧克力蛋糕","馬卡龍",
+    "鹹酥雞","烤地瓜","黑糖珍奶","水果茶","抹茶拿鐵"
+  ],
+  dinner: [
+    "火鍋","燒肉","披薩","滷味","牛排","義大利麵","居酒屋","羊肉爐","小火鍋",
+    "日式定食","壽喜燒","麻辣鍋","砂鍋魚頭","港式點心","泰式料理",
+    "韓式烤肉","海鮮炒麵","清燉牛肉麵","燒烤","咖哩鍋"
+  ]
+};
+
+/* 🔁 不重複抽取 */
+const remainingMeals = {
+  breakfast: [],
+  lunch: [],
+  tea: [],
+  dinner: []
+};
+
+let currentMealType = null;
+
+const buttons = document.querySelectorAll('.meal-btn');
+const result = document.getElementById('result');
+const decideBtn = document.querySelector('.decide-btn');
+
+function resetMeals(type) {
+  remainingMeals[type] = [...meals[type]];
+}
+
+// 選餐別
+buttons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    buttons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentMealType = btn.dataset.meal;
+
+    if (remainingMeals[currentMealType].length === 0) {
+      resetMeals(currentMealType);
+    }
+
+    result.textContent = "已選：" + btn.textContent;
+  });
+});
+
+// 隨機選取（全部輪完才重複）
+decideBtn.addEventListener('click', () => {
+  if (!currentMealType) {
+    result.textContent = "請先選擇餐別！";
+    return;
+  }
+
+  if (remainingMeals[currentMealType].length === 0) {
+    resetMeals(currentMealType);
+  }
+
+  const list = remainingMeals[currentMealType];
+  const index = Math.floor(Math.random() * list.length);
+  const selected = list.splice(index, 1)[0];
+
+  result.textContent = "你可以吃：" + selected;
+});
+</script>
+
+</body>
+</html>
